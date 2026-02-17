@@ -3,375 +3,512 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Range Round Max</title>
+    <title>Chipping Ultimate V3.2</title>
     <style>
         :root {
-            --primary: #2e7d32;
-            --accent: #66bb6a;
-            --bg: #000000;
-            --card: #121212;
-            --text: #ffffff;
-            --key-bg: #1e1e1e;
+            --bg: #0f172a; --card-bg: #1e293b; --text: #f1f5f9;
+            --accent: #22c55e; --danger: #ef4444; --gold: #fbbf24;
+            --chart-line: #38bdf8; --grid: #334155; --keypad-bg: #334155;
         }
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 16px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        h1 { margin: 0 0 10px 0; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 900; background: linear-gradient(to right, var(--accent), #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        /* SCREENS */
-        .screen { display: none; flex-direction: column; height: 100%; }
-        .screen.active { display: flex; }
-
-        /* HEADER */
-        .play-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 12px;
-            background: #1a1a1a;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #333;
-        }
-        .header-hole { font-size: 1.1rem; font-weight: bold; color: white; }
-        .header-par { font-size: 0.8rem; color: #888; }
-        .header-total { 
-            font-size: 1.2rem; 
-            font-weight: 800; 
-            color: var(--accent); 
-        }
-
-        /* YARDAGE BOX */
-        .yardage-box {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            flex-shrink: 0;
-            margin-bottom: 10px;
-            position: relative;
-            border: 1px solid #222;
-        }
-        .shot-counter-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: #666;
-            font-size: 0.8rem;
-            font-weight: bold;
-            background: #111;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-        .main-dist { font-size: 5.5rem; font-weight: 800; line-height: 0.9; margin: 10px 0; color: #fff; }
-        .dist-label { color: #888; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
-        .last-shot-display { font-size: 0.9rem; color: var(--accent); margin-top: 5px; height: 1.2em; }
-
-        /* COMPACT INPUT DISPLAY */
-        .input-display {
-            background: #111;
-            color: var(--accent);
-            font-size: 1.8rem;
-            text-align: center;
-            padding: 5px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            font-family: monospace;
-            border: 1px solid #333;
-            height: 40px; /* Fixed small height */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        /* KEYPAD - FLEX GROW TO FILL SCREEN */
-        .keypad {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-            flex-grow: 1; /* This makes it fill all remaining space */
-            margin-bottom: 5px;
-        }
-
-        .key {
-            background: var(--key-bg);
-            color: white;
-            font-size: 2rem; /* Big text */
-            font-weight: bold;
-            border-radius: 8px;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            user-select: none;
-            cursor: pointer;
-        }
-        .key:active { background: #444; }
-        .key-go { grid-column: span 1; grid-row: span 2; background: var(--primary); font-size: 1.5rem; }
-        .key-go:active { background: #1b5e20; }
-        .key-0 { grid-column: span 2; } 
-        .key-del { background: #2c1a1a; color: #ef9a9a; font-size: 1.5rem; }
-        .key-next { background: #222; color: #888; font-size: 1rem; border: 1px solid #444; line-height: 1.1; }
-
-        /* ADMIN STYLES */
-        .course-list { flex-grow: 1; overflow-y: auto; }
-        .course-item { background: #222; padding: 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; }
-        .btn-main { background: var(--primary); color: white; padding: 15px; width: 100%; font-size: 1.1rem; border:none; border-radius:8px; }
-        input { width: 100%; padding: 12px; background: #333; border: 1px solid #555; color: white; margin-bottom: 10px; box-sizing: border-box; }
+        /* LAYOUT */
+        .card { background-color: var(--card-bg); border-radius: 16px; padding: 16px; width: 100%; max-width: 400px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
         
-        .exit-btn { width: 100%; background: #111; color: #555; border: none; padding: 10px; font-size: 0.8rem; }
+        /* MODE SWITCHER */
+        .mode-switch { display: flex; background: var(--bg); border: 1px solid var(--grid); padding: 4px; border-radius: 10px; margin-bottom: 15px; }
+        .mode-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #64748b; font-weight: bold; cursor: pointer; border-radius: 8px; transition: 0.2s; font-size: 0.85rem; }
+        .mode-btn.active { background: var(--card-bg); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .mode-btn.active-combine { background: var(--gold); color: black; box-shadow: 0 2px 10px rgba(251, 191, 36, 0.2); }
 
+        /* METRICS */
+        .metrics-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .metric-box { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; text-align: center; }
+        .metric-val { font-size: 1.8rem; font-weight: 800; color: white; line-height: 1; }
+        .metric-label { font-size: 0.7rem; color: #94a3b8; margin-top: 5px; text-transform: uppercase; }
+
+        /* INPUTS */
+        .input-display { display: grid; grid-template-columns: 1fr 1fr 0.8fr; gap: 8px; margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 0.7rem; color: #64748b; margin-bottom: 4px; text-transform: uppercase; }
+        .custom-input { 
+            width: 100%; background: #0f172a; border: 2px solid #334155; color: #64748b; 
+            padding: 0; height: 50px; border-radius: 8px; font-size: 1.5rem; text-align: center; 
+            font-weight: bold; cursor: pointer; transition: all 0.2s; caret-color: transparent;
+        }
+        .custom-input.active-field { border-color: var(--accent); color: white; background: rgba(34, 197, 94, 0.1); box-shadow: 0 0 15px rgba(34, 197, 94, 0.2); }
+        .custom-input.locked { background: #1e293b; border-color: transparent; color: var(--gold); opacity: 1; }
+
+        /* KEYPAD */
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+        .key { background: var(--keypad-bg); color: white; border: none; padding: 15px 0; font-size: 1.6rem; font-weight: bold; border-radius: 8px; cursor: pointer; touch-action: manipulation; box-shadow: 0 4px 0 rgba(0,0,0,0.3); }
+        .key:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.3); background: #475569; }
+        .key-action { background: #475569; font-size: 1rem; text-transform: uppercase; }
+        .key-submit { background: var(--accent); color: #064e3b; grid-column: span 3; margin-top: 5px; }
+        .key-combine { background: var(--gold); color: black; grid-column: span 3; margin-top: 5px; }
+
+        /* TABS */
+        .tabs { display: flex; background: #0f172a; padding: 4px; border-radius: 10px; margin-bottom: 20px; width: 100%; max-width: 400px; }
+        .tab { flex: 1; text-align: center; padding: 10px; font-size: 0.85rem; color: #64748b; cursor: pointer; border-radius: 8px; font-weight: 600; }
+        .tab.active { background: var(--card-bg); color: white; }
+        
+        /* UTILS */
+        .hidden { display: none !important; }
+
+        /* VISUALS */
+        .zone-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .zone-table th { text-align: left; color: #64748b; font-size: 0.7rem; padding-bottom: 8px; border-bottom: 1px solid var(--grid); }
+        .zone-table td { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .zone-bar-bg { width: 100%; height: 4px; background: #334155; border-radius: 2px; margin-top: 6px; }
+        .zone-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
+        .chart-container { width: 100%; height: 220px; position: relative; background: #0f172a; border-radius: 12px; overflow: hidden; border: 1px solid #334155; }
+        canvas { width: 100%; height: 100%; }
+        
+        /* EXPORT ROW */
+        .export-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155; }
+        .btn-export { background: #334155; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
+
+        /* HELP SECTION */
+        .help-toggle { background:none; border:none; color:#64748b; width:100%; font-size:0.9rem; cursor:pointer; padding:15px; border: 1px dashed #334155; border-radius: 8px; margin-top:10px; font-weight:bold; }
+        .help-content { margin-top:15px; color:#94a3b8; font-size:0.85rem; line-height:1.6; text-align:left; }
+        .help-rule { margin-bottom: 12px; border-bottom: 1px solid #334155; padding-bottom: 12px; }
+        .help-step { display:flex; gap:10px; margin-bottom:5px; }
+        .step-num { color:var(--accent); font-weight:bold; }
+
+        /* PRINT */
+        @media print {
+            body { background: white; color: black; }
+            .tabs, .keypad, .mode-switch, button:not(.hidden-print) { display: none !important; }
+            #view-history { display: block !important; }
+            .card { border: none; box-shadow: none; color: black; border-bottom: 1px solid #eee; }
+            span { color: black !important; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="screen-select" class="container screen active">
-        <h1 style="text-align:center; color:var(--accent);">Range Round Max</h1>
-        <input type="text" id="course-search" placeholder="Search..." onkeyup="renderList()">
-        <div id="course-list-container" class="course-list"></div>
-        <button class="btn-main" onclick="showAdd()">+ Add New Course</button>
+    <h1>Chipping <span style="color:var(--accent)">ULTIMATE</span></h1>
+
+    <div class="tabs">
+        <div class="tab active" onclick="setTab('input')">Log</div>
+        <div class="tab" onclick="setTab('visuals')">Stats</div>
+        <div class="tab" onclick="setTab('history')">History</div>
     </div>
 
-    <div id="screen-play" class="container screen">
+    <div id="view-input" class="view-section">
         
-        <div class="play-header">
+        <div class="card">
+            <div class="mode-switch">
+                <button class="mode-btn active" id="btn-mode-practice" onclick="setMode('practice')">PRACTICE</button>
+                <button class="mode-btn" id="btn-mode-combine" onclick="setMode('combine')">THE COMBINE</button>
+            </div>
+
+            <div id="combine-header" class="hidden" style="text-align:center; margin-bottom:15px;">
+                <div style="font-size:0.8rem; color:#94a3b8;">COMBINE SHOT <span id="comb-num" style="color:white; font-weight:bold">1</span> / 10</div>
+                <div style="font-size:1.2rem; font-weight:bold; color:var(--gold); margin-top:5px;">Target: <span id="comb-target">10</span> Paces</div>
+            </div>
+
+            <div class="input-display">
+                <div class="input-group">
+                    <label>Start</label>
+                    <input type="text" id="inp-start" class="custom-input" readonly inputmode="none" onclick="activateField('inp-start')">
+                </div>
+                <div class="input-group">
+                    <label>Leave</label>
+                    <input type="text" id="inp-leave" class="custom-input" readonly inputmode="none" onclick="activateField('inp-leave')">
+                </div>
+                <div class="input-group">
+                    <label>Strk</label>
+                    <input type="text" id="inp-strokes" class="custom-input" readonly inputmode="none" onclick="activateField('inp-strokes')">
+                </div>
+            </div>
+
+            <div class="keypad">
+                <button class="key" onclick="pressKey(1)">1</button>
+                <button class="key" onclick="pressKey(2)">2</button>
+                <button class="key" onclick="pressKey(3)">3</button>
+                <button class="key" onclick="pressKey(4)">4</button>
+                <button class="key" onclick="pressKey(5)">5</button>
+                <button class="key" onclick="pressKey(6)">6</button>
+                <button class="key" onclick="pressKey(7)">7</button>
+                <button class="key" onclick="pressKey(8)">8</button>
+                <button class="key" onclick="pressKey(9)">9</button>
+                <button class="key key-action" onclick="pressBack()">⌫</button>
+                <button class="key" onclick="pressKey(0)">0</button>
+                <button class="key key-action" style="background:#3b82f6" onclick="pressNext()">NEXT</button>
+                <button class="key key-submit" id="btn-submit" onclick="submitShot()">SAVE SHOT</button>
+            </div>
+        </div>
+
+        <div class="metrics-row" id="practice-metrics">
+            <div class="metric-box">
+                <div class="metric-val" id="disp-sg">--</div>
+                <div class="metric-label">Strokes Gained</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-val" id="disp-avg-error">--</div>
+                <div class="metric-label">Avg Error %</div>
+            </div>
+        </div>
+
+        <button class="help-toggle" onclick="toggleHelp()">❓ Instructions & Rules (Tap Me)</button>
+        
+        <div id="help-section" class="card hidden">
+            <div class="help-rule">
+                <strong>MODE 1: PRACTICE</strong>
+                <br>Free training mode.
+                <div class="help-step"><span class="step-num">1.</span> Tap <strong>Start</strong> and type distance (e.g. 15).</div>
+                <div class="help-step"><span class="step-num">2.</span> Hit your chip.</div>
+                <div class="help-step"><span class="step-num">3.</span> Enter <strong>Leave</strong> (distance remaining).</div>
+                <div class="help-step">
+                    <span class="step-num">4.</span> Enter <strong>Total Strokes</strong> (Chip + Putts).
+                    <br><span style="font-size:0.75rem; color:#94a3b8; margin-left:22px;">(e.g. Chip + 1 Putt = <strong>2</strong> Strokes)</span>
+                </div>
+            </div>
+            <div class="help-rule">
+                <strong>MODE 2: THE COMBINE</strong>
+                <br>A standardized test of 10 shots.
+                <br>• <strong>3x</strong> @ 5 Paces
+                <br>• <strong>3x</strong> @ 10 Paces
+                <br>• <strong>2x</strong> @ 15 Paces
+                <br>• <strong>2x</strong> @ 20 Paces
+                <br><em>(Distance is locked. You must hit to the specific target).</em>
+            </div>
             <div>
-                <div class="header-hole" id="ui-hole">Hole 1</div>
-                <div class="header-par" id="ui-par">Par 4</div>
-            </div>
-            <div style="text-align:right;">
-                <div style="font-size:0.6rem; color:#666; text-transform:uppercase;">Total Shots</div>
-                <div class="header-total" id="ui-total">0</div>
+                <strong>METRICS</strong>
+                <br>• <span style="color:var(--accent)">Strokes Gained (SG):</span> Performance vs PGA Tour Baseline. (e.g. +0.2 means you beat the pro average).
+                <br>• <span style="color:var(--accent)">Error %:</span> How close you hit it (Goal: <10%).
             </div>
         </div>
 
-        <div class="yardage-box">
-            <div class="shot-counter-badge" id="ui-shot-count">Shot 1</div>
-            <div class="main-dist" id="ui-dist">400</div>
-            <div class="dist-label">Yards Remaining</div>
-            <div class="last-shot-display" id="ui-last-shot"></div>
-        </div>
-
-        <div class="input-display" id="keypad-display">
-            <span style="color:#333; font-size:1rem;">ENTER DISTANCE</span>
-        </div>
-
-        <div class="keypad">
-            <button class="key" onclick="pad(7)">7</button>
-            <button class="key" onclick="pad(8)">8</button>
-            <button class="key" onclick="pad(9)">9</button>
-            <button class="key key-next" onclick="nextHole()">NEXT<br>HOLE</button>
-
-            <button class="key" onclick="pad(4)">4</button>
-            <button class="key" onclick="pad(5)">5</button>
-            <button class="key" onclick="pad(6)">6</button>
-            <button class="key key-go" onclick="commitShot()">HIT</button> 
-
-            <button class="key" onclick="pad(1)">1</button>
-            <button class="key" onclick="pad(2)">2</button>
-            <button class="key" onclick="pad(3)">3</button>
-
-            <button class="key key-del" onclick="padDel()">⌫</button>
-            <button class="key key-0" onclick="pad(0)">0</button>
-        </div>
-        
-        <button class="exit-btn" onclick="exitRound()">EXIT ROUND</button>
     </div>
 
-    <div id="screen-add" class="container screen">
-        <h1 style="text-align:center; color:var(--accent);">Add Course</h1>
-        <div style="flex-grow:1; overflow-y:auto;">
-            <input type="text" id="new-course-name" placeholder="Course Name">
-            <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <button style="flex:1; padding:10px; background:#333; color:white; border:none;" onclick="genInputs(9)">9 Holes</button>
-                <button style="flex:1; padding:10px; background:#333; color:white; border:none;" onclick="genInputs(18)">18 Holes</button>
-            </div>
-            <div id="hole-inputs"></div>
+    <div id="view-visuals" class="view-section hidden">
+        <div class="card">
+            <div class="card-header"><span>Dispersion Map</span><span style="font-size:0.7em; color:var(--accent);">Last 50</span></div>
+            <div class="chart-container"><canvas id="heatmapCanvas"></canvas></div>
         </div>
-        <div style="padding-top:10px;">
-            <button class="btn-main" onclick="saveCourse()">Save</button>
-            <button style="width:100%; background:#333; color:white; padding:15px; margin-top:10px; border:none;" onclick="showSelect()">Cancel</button>
+        <div class="card">
+            <div class="card-header">Zone Analysis</div>
+            <table class="zone-table"><thead><tr><th width="30%">Distance</th><th width="20%">Shots</th><th width="25%">Error %</th><th width="25%">SG</th></tr></thead><tbody id="zone-body"></tbody></table>
+        </div>
+    </div>
+
+    <div id="view-history" class="view-section hidden">
+        <div class="card">
+            <div class="card-header">
+                <span>History</span>
+                <button onclick="clearData()" style="background:none; border:none; color:#ef4444; font-size:0.7em;">RESET</button>
+            </div>
+            <div id="history-list" style="max-height: 400px; overflow-y: auto;"></div>
+            <div class="export-row">
+                <button class="btn-export" onclick="shareCSV()">📄 Share CSV</button>
+                <button class="btn-export" onclick="createFullPDF()">🖨️ Print PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="combine-modal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:100; display:none; align-items:center; justify-content:center;">
+        <div class="card" style="text-align:center; border:2px solid var(--gold);">
+            <h2 style="color:var(--gold); margin-top:0;">COMBINE COMPLETE</h2>
+            <div style="font-size:0.8rem; color:#94a3b8; margin-bottom:10px;">HANDICAP RATING</div>
+            <div style="font-size:3rem; font-weight:900; color:white;" id="final-grade">--</div>
+            <div style="margin:20px 0; font-size:0.9rem; color:#cbd5e1;" id="final-summary"></div>
+            <button class="key key-combine" onclick="closeCombineModal()">CLOSE</button>
         </div>
     </div>
 
     <script>
-        // --- DATA ---
-        const famous = [
-            { id: 'augusta', name: 'Augusta National', source: 'famous', holes: [ {p:4, d:445}, {p:5, d:575}, {p:4, d:350}, {p:3, d:240}, {p:4, d:495}, {p:3, d:180}, {p:4, d:450}, {p:5, d:570}, {p:4, d:460}, {p:4, d:495}, {p:4, d:520}, {p:3, d:155}, {p:5, d:510}, {p:4, d:440}, {p:5, d:550}, {p:3, d:170}, {p:4, d:440}, {p:4, d:465} ]},
-            { id: 'pebble', name: 'Pebble Beach', source: 'famous', holes: [ {p:4, d:377}, {p:5, d:511}, {p:4, d:390}, {p:4, d:326}, {p:3, d:192}, {p:5, d:506}, {p:3, d:106}, {p:4, d:427}, {p:4, d:481}, {p:4, d:446}, {p:4, d:373}, {p:3, d:201}, {p:4, d:403}, {p:5, d:572}, {p:4, d:396}, {p:4, d:401}, {p:3, d:177}, {p:5, d:543} ]}
-        ];
-
-        let userCourses = [];
-        let activeCourse = null;
-        let curHole = 0;
-        let dist = 0;
+        // --- STATE ---
+        let shots = JSON.parse(localStorage.getItem('golfShotsUltimate')) || [];
+        let activeInputId = 'inp-start';
+        let currentMode = 'practice'; // 'practice' or 'combine'
         
-        let holeShots = 0;
-        let totalScore = 0;
-        let buffer = "";
+        // NEW COMBINE ROUTINE (5, 10, 15, 20 paces)
+        const combineRoutine = [5, 5, 5, 10, 10, 10, 15, 15, 20, 20];
+        let combineIndex = 0;
+        let combineSessionSG = 0;
 
-        window.onload = () => {
-            if(localStorage.getItem('rp_courses')) userCourses = JSON.parse(localStorage.getItem('rp_courses'));
-            renderList();
-            genInputs(9);
-        };
+        // Init
+        updateUI();
+        activateField('inp-start');
 
-        // --- KEYPAD ---
-        function pad(num) {
-            if(buffer.length > 3) return; 
-            buffer += num;
-            updatePad();
-        }
-        function padDel() {
-            buffer = buffer.slice(0, -1);
-            updatePad();
-        }
-        function updatePad() {
-            const el = document.getElementById('keypad-display');
-            if(buffer === "") el.innerHTML = '<span style="color:#333; font-size:1rem;">ENTER DISTANCE</span>';
-            else el.innerText = buffer;
-        }
-        function commitShot() {
-            if(buffer === "") return;
-            const val = parseInt(buffer);
-            buffer = "";
-            updatePad();
+        // --- MODE SWITCHING ---
+        function setMode(mode) {
+            currentMode = mode;
             
-            holeShots++;
-            totalScore++;
-            dist -= val;
+            document.getElementById('btn-mode-practice').className = `mode-btn ${mode==='practice'?'active':''}`;
+            document.getElementById('btn-mode-combine').className = `mode-btn ${mode==='combine'?'active-combine':''}`;
             
-            // Show last shot feedback
-            document.getElementById('ui-last-shot').innerText = `Last: ${val} yds`;
-            
-            updateUI();
+            const submitBtn = document.getElementById('btn-submit');
+            const startInp = document.getElementById('inp-start');
+
+            if (mode === 'combine') {
+                combineIndex = 0;
+                combineSessionSG = 0;
+                document.getElementById('combine-header').classList.remove('hidden');
+                document.getElementById('practice-metrics').classList.add('hidden');
+                startInp.classList.add('locked');
+                submitBtn.className = 'key key-combine';
+                submitBtn.innerText = 'NEXT SHOT';
+                updateCombineUI();
+            } else {
+                document.getElementById('combine-header').classList.add('hidden');
+                document.getElementById('practice-metrics').classList.remove('hidden');
+                startInp.classList.remove('locked');
+                startInp.value = '';
+                submitBtn.className = 'key key-submit';
+                submitBtn.innerText = 'SAVE SHOT';
+                activateField('inp-start');
+            }
         }
 
-        // --- GAME ---
-        function startRound(type, idx) {
-            activeCourse = (type === 'user') ? userCourses[idx] : famous.find(c => c.id === idx);
-            curHole = 0;
-            totalScore = 0;
-            loadHole();
-            
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('screen-play').classList.add('active');
+        function updateCombineUI() {
+            document.getElementById('comb-num').innerText = combineIndex + 1;
+            document.getElementById('comb-target').innerText = combineRoutine[combineIndex];
+            document.getElementById('inp-start').value = combineRoutine[combineIndex];
+            document.getElementById('inp-leave').value = '';
+            document.getElementById('inp-strokes').value = '';
+            activateField('inp-leave');
         }
 
-        function loadHole() {
-            if(curHole >= activeCourse.holes.length) {
-                alert(`Round Complete! Total Score: ${totalScore}`);
-                showSelect();
+        // --- KEYPAD LOGIC ---
+        function activateField(id) {
+            if (currentMode === 'combine' && id === 'inp-start') return;
+            ['inp-start', 'inp-leave', 'inp-strokes'].forEach(f => {
+                document.getElementById(f).classList.remove('active-field');
+            });
+            activeInputId = id;
+            document.getElementById(id).classList.add('active-field');
+        }
+
+        function pressKey(num) {
+            const el = document.getElementById(activeInputId);
+            if (el.value.length < 3) el.value = el.value + num;
+        }
+
+        function pressBack() {
+            const el = document.getElementById(activeInputId);
+            el.value = el.value.slice(0, -1);
+        }
+
+        function pressNext() {
+            if (activeInputId === 'inp-start') activateField('inp-leave');
+            else if (activeInputId === 'inp-leave') activateField('inp-strokes');
+            else if (activeInputId === 'inp-strokes') submitShot();
+        }
+
+        // --- CORE DATA LOGIC ---
+        // NEW SG Logic tuned for shorter chips
+        function calculateSG(paces, strokes) {
+            let baseline = 2.1;
+            if (paces <= 5) baseline = 2.05;
+            else if (paces <= 10) baseline = 2.2;
+            else if (paces <= 15) baseline = 2.3;
+            else if (paces <= 20) baseline = 2.4;
+            else baseline = 2.5; // >20
+            return baseline - strokes;
+        }
+
+        function submitShot() {
+            const start = parseFloat(document.getElementById('inp-start').value);
+            const leave = parseFloat(document.getElementById('inp-leave').value);
+            const strokes = parseInt(document.getElementById('inp-strokes').value);
+
+            if (!start || isNaN(leave) || !strokes) {
+                document.querySelector('.input-display').style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                setTimeout(() => document.querySelector('.input-display').style.backgroundColor = 'transparent', 200);
                 return;
             }
-            const h = activeCourse.holes[curHole];
-            dist = h.d;
-            holeShots = 1; // "Shot 1" is the one we are about to hit
-            buffer = "";
-            document.getElementById('ui-last-shot').innerText = "";
-            updatePad();
+
+            const now = new Date();
+            const h = now.getHours() % 12 || 12;
+            const m = now.getMinutes().toString().padStart(2, '0');
+            const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+            const timeString = `${h}:${m} ${ampm}`;
+
+            const errorPct = (leave / start) * 100;
+            const sg = calculateSG(start, strokes);
+
+            const newShot = {
+                id: Date.now(),
+                date: now.toLocaleDateString(),
+                time: timeString,
+                type: currentMode,
+                start, leave, strokes, errorPct, sg
+            };
+
+            shots.unshift(newShot);
+            localStorage.setItem('golfShotsUltimate', JSON.stringify(shots));
+
+            if (currentMode === 'practice') {
+                document.getElementById('inp-start').value = '';
+                document.getElementById('inp-leave').value = '';
+                document.getElementById('inp-strokes').value = '';
+                activateField('inp-start');
+            } else {
+                combineSessionSG += sg;
+                combineIndex++;
+                if (combineIndex < combineRoutine.length) {
+                    updateCombineUI();
+                } else {
+                    showCombineResults();
+                }
+            }
             updateUI();
         }
 
-        function updateUI() {
-            const h = activeCourse.holes[curHole];
-            document.getElementById('ui-hole').innerText = `Hole ${curHole + 1}`;
-            document.getElementById('ui-par').innerText = `Par ${h.p} • ${h.d}y`;
-            document.getElementById('ui-total').innerText = totalScore;
-            document.getElementById('ui-shot-count').innerText = `Shot ${holeShots}`;
-            document.getElementById('ui-dist').innerText = Math.abs(dist);
+        function showCombineResults() {
+            const avgSG = combineSessionSG / 10;
+            let grade = "SCRATCH";
+            let color = "var(--gold)";
+
+            if (avgSG > 0) { grade = "TOUR PRO"; color = "#38bdf8"; }
+            else if (avgSG > -0.2) { grade = "SCRATCH"; color = "#fbbf24"; }
+            else if (avgSG > -0.5) { grade = "5 HCP"; color = "#ffffff"; }
+            else if (avgSG > -0.8) { grade = "10 HCP"; color = "#cbd5e1"; }
+            else { grade = "HIGH HCP"; color = "#ef4444"; }
+
+            document.getElementById('final-grade').innerText = grade;
+            document.getElementById('final-grade').style.color = color;
+            document.getElementById('final-summary').innerText = `Total SG: ${combineSessionSG.toFixed(2)} vs Pro Baseline`;
             
-            const lbl = document.querySelector('.dist-label');
-            if(dist <= 0) {
-                lbl.innerText = "Yards Past Pin";
-                lbl.style.color = "#ef5350";
-            } else {
-                lbl.innerText = "Yards Remaining";
-                lbl.style.color = "#888";
-            }
+            const modal = document.getElementById('combine-modal');
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
         }
 
-        function nextHole() {
-            curHole++;
-            loadHole();
+        function closeCombineModal() {
+            const modal = document.getElementById('combine-modal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+            setMode('practice');
         }
 
-        function exitRound() {
-            if(confirm("Exit Round?")) showSelect();
+        // --- UPDATE UI ---
+        function updateUI() {
+            const totalSG = shots.reduce((a,s) => a + (s.sg || 0), 0);
+            const avgErr = shots.length ? (shots.reduce((a,s) => a + s.errorPct, 0) / shots.length) : 0;
+
+            document.getElementById('disp-sg').innerText = (totalSG > 0 ? '+' : '') + totalSG.toFixed(2);
+            document.getElementById('disp-avg-error').innerText = avgErr.toFixed(1) + '%';
+
+            renderVisuals();
+            renderHistory();
         }
 
-        // --- ADMIN ---
-        function renderList() {
-            const term = document.getElementById('course-search').value.toLowerCase();
-            const box = document.getElementById('course-list-container');
-            box.innerHTML = '';
-            [...userCourses, ...famous].forEach((c) => {
-                if(c.name.toLowerCase().includes(term)) {
-                    const isU = c.source === 'user';
-                    const fn = isU ? `startRound('user', ${userCourses.indexOf(c)})` : `startRound('famous', '${c.id}')`;
-                    box.innerHTML += `<div class="course-item" onclick="${fn}">
-                        <div style="font-weight:bold">${c.name}</div>
-                        <div style="font-size:0.8rem; color:#888;">${isU?'Saved':'Famous'} • ${c.holes.length} Holes</div>
-                    </div>`;
-                }
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = shots.map(s => {
+                const badgeColor = s.type === 'combine' ? 'var(--gold)' : '#64748b';
+                const badgeText = s.type === 'combine' ? 'COMBINE' : 'PRACTICE';
+                return `
+                <div style="display:flex; flex-direction:column; padding:10px 0; border-bottom:1px solid #334155; font-size:0.85rem;">
+                    <div style="font-size:0.7rem; color:#64748b; margin-bottom:4px; display:flex; justify-content:space-between;">
+                        <span>${s.date} ${s.time ? '@ '+s.time : ''}</span>
+                        <span style="color:${badgeColor}; font-weight:bold; font-size:0.6rem; border:1px solid ${badgeColor}; padding:1px 4px; border-radius:4px;">${badgeText}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <div><span style="color:#fff; font-weight:bold;">${s.start}p</span> <span style="color:#64748b">to</span> ${s.leave}p</div>
+                        <div style="text-align:right">
+                            <span style="color:${s.sg>=0 ? 'var(--accent)':'#ef4444'}">SG ${s.sg>0?'+':''}${s.sg ? s.sg.toFixed(2) : '0.00'}</span>
+                            <span style="color:#64748b; margin-left:8px;">(${s.strokes})</span>
+                        </div>
+                    </div>
+                </div>`
+            }).join('');
+        }
+
+        // --- VISUALIZATIONS ---
+        function renderVisuals() {
+            // Heatmap
+            const canvas = document.getElementById('heatmapCanvas');
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            if (canvas.width !== rect.width * dpr) { canvas.width = rect.width * dpr; canvas.height = rect.height * dpr; ctx.scale(dpr, dpr); }
+            const w = rect.width; const h = rect.height; const cx = w / 2; const cy = h / 2;
+            ctx.clearRect(0, 0, w, h);
+            
+            const maxErrorRender = 20; const radiusScale = (Math.min(w, h) / 2) * 0.9;
+            ctx.strokeStyle = '#334155'; ctx.lineWidth = 1;
+            [5, 10, 15].forEach(pct => { ctx.beginPath(); ctx.arc(cx, cy, (pct / maxErrorRender) * radiusScale, 0, Math.PI * 2); ctx.stroke(); });
+            ctx.fillStyle = '#0f172a'; ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#22c55e'; ctx.stroke();
+
+            shots.slice(0, 50).forEach(s => {
+                let r = (s.errorPct / maxErrorRender) * radiusScale; if (r > radiusScale) r = radiusScale;
+                const angle = (s.id % 360) * (Math.PI / 180);
+                const x = cx + r * Math.cos(angle); const y = cy + r * Math.sin(angle);
+                ctx.fillStyle = s.errorPct <= 10 ? '#22c55e' : '#ef4444';
+                ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
+            });
+
+            // Zone Table
+            const buckets = [
+                { label: '0-5p', min: 0, max: 5, shots: [] }, { label: '6-10p', min: 6, max: 10, shots: [] },
+                { label: '11-15p', min: 11, max: 15, shots: [] }, { label: '16-20p', min: 16, max: 20, shots: [] },
+                { label: '21-25p', min: 21, max: 25, shots: [] }, { label: '26-30p', min: 26, max: 30, shots: [] },
+                { label: '31p+', min: 31, max: 999, shots: [] }
+            ];
+            shots.forEach(s => { const b = buckets.find(b => s.start >= b.min && s.start <= b.max); if(b) b.shots.push(s); });
+            const tbody = document.getElementById('zone-body'); tbody.innerHTML = '';
+            buckets.forEach(b => {
+                if (b.shots.length === 0) return;
+                const avgSG = b.shots.reduce((a,s)=>a+(s.sg||0),0)/b.shots.length;
+                const avgErr = b.shots.reduce((a,s)=>a+s.errorPct,0)/b.shots.length;
+                const color = avgSG >= 0 ? 'var(--accent)' : '#ef4444';
+                tbody.innerHTML += `<tr><td>${b.label}</td><td>${b.shots.length}</td><td>${avgErr.toFixed(1)}%</td><td style="color:${color}; font-weight:bold">${avgSG>0?'+':''}${avgSG.toFixed(2)}</td></tr>`;
             });
         }
-        function showAdd() {
-            document.getElementById('screen-select').classList.remove('active');
-            document.getElementById('screen-add').classList.add('active');
+
+        // --- EXPORT ---
+        async function shareCSV() {
+            let csv = "Date,Time,Type,Start,Leave,Strokes,ErrorPct,SG\n";
+            shots.forEach(s => { csv += `${s.date},${s.time||''},${s.type},${s.start},${s.leave},${s.strokes},${s.errorPct.toFixed(2)},${s.sg.toFixed(2)}\n`; });
+            
+            if (navigator.share) {
+                try {
+                    const file = new File([csv], "chipping_ultimate.csv", { type: "text/csv" });
+                    if (navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'Chipping Data' }); return; }
+                } catch (e) {}
+            }
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a"); link.href = url; link.download = "chipping_ultimate.csv";
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
-        function showSelect() {
-            document.getElementById('screen-add').classList.remove('active');
-            document.getElementById('screen-play').classList.remove('active');
-            document.getElementById('screen-select').classList.add('active');
+
+        function createFullPDF() {
+            document.getElementById('view-visuals').classList.remove('hidden');
+            setTimeout(() => {
+                alert("IPHONE: Tap Share icon -> Save to Files.");
+                window.print();
+                setTimeout(() => setTab('history'), 1000);
+            }, 300);
         }
-        function genInputs(n) {
-            const d = document.getElementById('hole-inputs');
-            d.innerHTML = '';
-            for(let i=1; i<=n; i++) {
-                d.innerHTML += `<div style="display:flex; gap:5px; margin-bottom:5px;">
-                    <div style="width:30px; padding-top:10px; color:#888;">${i}</div>
-                    <input type="number" placeholder="Par" value="4" style="flex:1;" class="inp-par">
-                    <input type="number" placeholder="Yds" style="flex:2;" class="inp-dist">
-                </div>`;
+
+        function setTab(tab) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-' + tab).classList.remove('hidden');
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            const tabs = Array.from(document.querySelectorAll('.tab'));
+            const target = tabs.find(t => t.innerText.toLowerCase().includes(tab === 'input' ? 'log' : (tab === 'visuals' ? 'stats' : 'history')));
+            if(target) target.classList.add('active');
+            if (tab === 'visuals') { setTimeout(() => renderVisuals(), 50); }
+        }
+
+        function toggleHelp() {
+            const el = document.getElementById('help-section');
+            el.classList.toggle('hidden');
+            // Auto scroll to help
+            if(!el.classList.contains('hidden')) {
+                el.scrollIntoView({behavior: "smooth"});
             }
         }
-        function saveCourse() {
-            const name = document.getElementById('new-course-name').value;
-            if(!name) return alert("Name required");
-            const holes = [];
-            const rows = document.getElementById('hole-inputs').children;
-            for(let row of rows) {
-                const p = row.querySelector('.inp-par').value;
-                const d = row.querySelector('.inp-dist').value;
-                if(p && d) holes.push({p:parseInt(p), d:parseInt(d)});
-            }
-            if(holes.length===0) return;
-            userCourses.push({id: Date.now().toString(), name, source:'user', holes});
-            localStorage.setItem('rp_courses', JSON.stringify(userCourses));
-            renderList();
-            showSelect();
-        }
+
+        function clearData() { if(confirm("Delete all data?")) { localStorage.removeItem('golfShotsUltimate'); shots=[]; updateUI(); } }
     </script>
 </body>
 </html>
