@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chipping Ultimate V3.6</title>
+    <title>Chipping Ultimate V3.7</title>
     <style>
         :root { --bg: #0f172a; --card-bg: #1e293b; --text: #f1f5f9; --accent: #22c55e; --danger: #ef4444; --gold: #fbbf24; --chart-line: #38bdf8; --grid: #334155; --keypad-bg: #334155; }
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -65,11 +65,51 @@
         .help-step { display:flex; gap:10px; margin-bottom:5px; }
         .step-num { color:var(--accent); font-weight:bold; }
 
+        /* --- PRINT / PDF FIXES --- */
         @media print {
-            body { background: white; color: black; }
-            .tabs, .keypad, .mode-switch, button:not(.hidden-print) { display: none !important; }
-            #view-history { display: block !important; }
-            .card { border: none; box-shadow: none; color: black; border-bottom: 1px solid #eee; }
+            /* Force White Paper Look */
+            body { background: white !important; color: black !important; }
+            
+            /* Clean Card Styling */
+            .card { 
+                background: white !important; 
+                color: black !important; 
+                border: 1px solid #ccc !important; 
+                box-shadow: none !important; 
+                margin-bottom: 20px !important;
+            }
+            .card-header { 
+                color: black !important; 
+                border-bottom: 2px solid #000 !important; 
+            }
+            
+            /* Fix Charts Background */
+            .chart-container { 
+                background: white !important; 
+                border: 1px solid #000 !important; 
+            }
+            canvas { background: white !important; }
+            
+            /* Fix Metrics */
+            .metric-box { background: #f8f9fa !important; border: 1px solid #ddd !important; }
+            .metric-val { color: black !important; }
+            .metric-label { color: #444 !important; }
+            
+            /* Fix Table */
+            .zone-table th, .zone-table td { color: black !important; border-color: #ccc !important; }
+            
+            /* Fix Title */
+            h1 { color: black !important; -webkit-text-fill-color: black !important; }
+            
+            /* Hide Controls */
+            .tabs, .keypad, .mode-switch, button, .help-toggle, .export-row, .help-content { display: none !important; }
+            
+            /* Force Full Layout */
+            #view-history, #view-visuals { display: block !important; }
+            #view-input { display: none !important; }
+            
+            /* History List */
+            #history-list div { color: black !important; border-bottom: 1px solid #ccc !important; }
             span { color: black !important; }
         }
     </style>
@@ -391,7 +431,7 @@
             }).join('');
         }
 
-        // --- UPDATED VISUAL: FIXED LABELS & TICKS ---
+        // --- UPDATED VISUAL: PRECISION CONE ---
         function renderVisuals() {
             const canvas = document.getElementById('heatmapCanvas');
             const ctx = canvas.getContext('2d');
