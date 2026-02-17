@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chipping Ultimate V3.5</title>
+    <title>Chipping Ultimate V3.6</title>
     <style>
         :root { --bg: #0f172a; --card-bg: #1e293b; --text: #f1f5f9; --accent: #22c55e; --danger: #ef4444; --gold: #fbbf24; --chart-line: #38bdf8; --grid: #334155; --keypad-bg: #334155; }
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -51,7 +51,7 @@
         .zone-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .zone-table th { text-align: left; color: #64748b; font-size: 0.7rem; padding-bottom: 8px; border-bottom: 1px solid var(--grid); }
         .zone-table td { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .chart-container { width: 100%; height: 250px; position: relative; background: #0f172a; border-radius: 12px; overflow: hidden; border: 1px solid #334155; }
+        .chart-container { width: 100%; height: 280px; position: relative; background: #0f172a; border-radius: 12px; overflow: hidden; border: 1px solid #334155; }
         canvas { width: 100%; height: 100%; }
         
         /* EXPORT ROW */
@@ -198,19 +198,16 @@
         let combineIndex = 0;
         let combineSessionSG = 0;
 
-        // --- SAFE INIT (CRASH GUARD) ---
+        // --- SAFE INIT ---
         try {
             const rawData = localStorage.getItem('golfShotsUltimate');
-            if (rawData) {
-                shots = JSON.parse(rawData);
-            }
+            if (rawData) { shots = JSON.parse(rawData); }
         } catch (e) {
             console.error("Data corrupted, resetting.");
             localStorage.removeItem('golfShotsUltimate');
             shots = [];
         }
 
-        // Start
         updateUI();
         activateField('inp-start');
 
@@ -394,7 +391,7 @@
             }).join('');
         }
 
-        // --- UPDATED VISUAL: PRECISION CONE WITH 2-PACE TICKS ---
+        // --- UPDATED VISUAL: FIXED LABELS & TICKS ---
         function renderVisuals() {
             const canvas = document.getElementById('heatmapCanvas');
             const ctx = canvas.getContext('2d');
@@ -404,7 +401,7 @@
             const w = rect.width; const h = rect.height; 
             
             ctx.clearRect(0, 0, w, h);
-            const padding = 45; // Increased padding for labels
+            const padding = 60; // Extra space for labels
             const graphW = w - padding * 1.5;
             const graphH = h - padding * 1.5;
 
@@ -422,21 +419,30 @@
             // LABELS
             ctx.fillStyle = '#64748b'; ctx.font = '10px sans-serif'; 
             
-            // X-AXIS TICKS (Every 2 Paces)
+            // X-AXIS (Every 2 Paces)
             ctx.textAlign = 'center'; ctx.textBaseline = 'top';
             for (let p = 0; p <= maxStart; p += 2) {
                 const tickX = getX(p);
-                // Draw tick mark
+                // Reduce clutter on small screens if many ticks
+                if (maxStart > 40 && p % 4 !== 0) continue; 
+                
                 ctx.beginPath(); ctx.moveTo(tickX, h - padding); ctx.lineTo(tickX, h - padding + 5); ctx.stroke();
-                // Draw label (only every 4 paces if cramped, but trying every 2 as requested)
-                if (maxStart > 40 && p % 4 !== 0) continue; // prevent overlap on long range
                 ctx.fillText(p, tickX, h - padding + 8);
             }
-            ctx.fillText('START DISTANCE (Paces)', w/2 + 20, h - 5);
+            ctx.fillText('START DISTANCE (Paces)', w/2 + 20, h - 20); // Moved UP
+
+            // Y-AXIS TICKS (Dynamic Step)
+            ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+            const yStep = maxLeave > 10 ? 2 : 1;
+            for (let p = 0; p <= maxLeave; p += yStep) {
+                const tickY = getY(p);
+                ctx.beginPath(); ctx.moveTo(padding, tickY); ctx.lineTo(padding - 5, tickY); ctx.stroke();
+                ctx.fillText(p, padding - 8, tickY);
+            }
 
             // Y-AXIS TITLE
             ctx.save();
-            ctx.translate(15, h/2);
+            ctx.translate(20, h/2); // Adjusted for padding
             ctx.rotate(-Math.PI/2);
             ctx.textAlign = 'center';
             ctx.fillText('DISTANCE REMAINING (Paces)', 0, 0);
